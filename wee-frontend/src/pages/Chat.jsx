@@ -25,6 +25,12 @@ const SectionLeft = styled.section`
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  button {
+    width: 223px;
+    height: 40px;
+    border-radius: 10px;
+    background-color: #8161df;
+  }
 `;
 const SectionRight = styled.section`
   width: 100%;

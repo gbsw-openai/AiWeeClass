@@ -25,7 +25,7 @@ export class OpenaiService {
         finalAnswer.push(chunkContent);
       }
     }
-    
+
     return finalAnswer[finalAnswer.length - 1];
   }
 }

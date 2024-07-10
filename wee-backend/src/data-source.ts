@@ -1,6 +1,10 @@
-import * as path from 'path';
+// import * as path from 'path';
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
+import { UserEntity } from './entities/user.entity';
+import { RoomEntity } from './entities/room.entity';
+import { CommonBigPKEntity } from './entities/common.entity';
+import { MessageEntity } from './entities/message.entity';
 
 dotenv.config();
 
@@ -11,10 +15,7 @@ export const dataSource = new DataSource({
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  entities: [
-    path.join(__dirname, 'src/entities/**/*.entity.ts'),
-    path.join(__dirname, 'dist/entities/**/*.entity.js'),
-  ],
-  synchronize: false,
+  entities: [UserEntity, RoomEntity, CommonBigPKEntity, MessageEntity],
+  synchronize: true,
   logging: true,
 });

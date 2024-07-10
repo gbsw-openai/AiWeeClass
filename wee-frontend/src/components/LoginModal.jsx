@@ -1,27 +1,81 @@
 import styled, { keyframes } from 'styled-components';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+// import { login, register } from '../services/authService';
+import axios from 'axios';
 
 // eslint-disable-next-line react/prop-types
 const LoginModal = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const passwordRef = useRef(null);
+
+  useEffect(() => {
+    setEmail('');
+    setPassword('');
+    setPasswordConfirm('');
+  }, [isLogin]);
 
   const toggleModal = () => {
     setIsLogin(!isLogin);
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    try {
+      if (isLogin) {
+        const response = await axios.post('http://localhost:3000/auth/login', { email, password });
+        console.log(response);
+        onClose();
+      } else {
+        if (password !== passwordConfirm) {
+          alert('비밀번호가 일치하지 않습니다.');
+          return;
+        }
+        await axios.post('http://localhost:3000/user/register', { email, password });
+        alert('회원가입 성공!');
+        onClose();
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        alert('잘못된 요청입니다.');
+        setPassword('');
+        if (!isLogin) {
+          setPasswordConfirm('');
+        }
+        passwordRef.current.focus();
+      } else {
+        alert('오류 발생: ' + error.message);
+      }
+    }
   };
 
   return (
     <Overlay>
       <ModalContainer style={isLogin ? { height: '380px' } : { height: '480px' }}>
         <h2>{isLogin ? '로그인' : '회원가입'}</h2>
-        <form>
-          <div className='label'>아이디</div>
-          <input type='text' required />
+        <form onSubmit={handleSubmit}>
+          <div className='label'>이메일</div>
+          <input type='email' value={email} onChange={e => setEmail(e.target.value)} required />
           <div className='label'>비밀번호</div>
-          <input type='password' required />
+          <input
+            type='password'
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            ref={passwordRef}
+          />
           {!isLogin && (
             <>
               <div className='label'>비밀번호 확인</div>
-              <input type='password' required />
+              <input
+                type='password'
+                value={passwordConfirm}
+                onChange={e => setPasswordConfirm(e.target.value)}
+                required
+              />
             </>
           )}
           <ButtonBox>
@@ -30,7 +84,7 @@ const LoginModal = ({ onClose }) => {
               <button type='submit' className='modal-login'>
                 {isLogin ? '로그인' : '회원가입'}
               </button>
-              <button onClick={onClose} className='modal-close'>
+              <button type='button' onClick={onClose} className='modal-close'>
                 닫기
               </button>
             </div>

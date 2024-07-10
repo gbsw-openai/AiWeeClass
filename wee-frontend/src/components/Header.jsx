@@ -1,31 +1,36 @@
-// Header.jsx
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import userImg from '../assets/UserImg.png';
 
-// eslint-disable-next-line react/prop-types
-const Header = ({ onLoginClick }) => {
+const Header = ({ onLoginClick, isLoggedIn }) => {
   const navigate = useNavigate();
+
   return (
-    <div>
-      <StyledHeader>
-        <div className='inner'>
-          <HeaderContainer>
-            <span className='header-logo' onClick={() => navigate('/')}>
-              <img src='src\assets\header-logo.svg' alt='' />
-              <h3>AI 위클래스</h3>
+    <StyledHeader>
+      <div className='inner'>
+        <HeaderContainer>
+          <span className='header-logo' onClick={() => navigate('/')}>
+            <img src='src\assets\header-logo.svg' alt='' />
+            <h3>AI 위클래스</h3>
+          </span>
+          <span className='header-nav'>
+            <span className='header-nav-introduce' onClick={() => navigate('/')}>
+              서비스소개
             </span>
-            <span className='header-nav'>
-              <span className='header-nav-introduce' onClick={() => navigate('/')}>
-                서비스소개
-              </span>
+            {isLoggedIn ? (
+              <UserButton onClick={() => navigate('/profile')}>
+                {/* 유저 이미지 및 이름 표시 */}
+                <UserImage src={userImg} />
+              </UserButton>
+            ) : (
               <button className='header-login' onClick={onLoginClick}>
                 로그인
               </button>
-            </span>
-          </HeaderContainer>
-        </div>
-      </StyledHeader>
-    </div>
+            )}
+          </span>
+        </HeaderContainer>
+      </div>
+    </StyledHeader>
   );
 };
 
@@ -85,6 +90,19 @@ const StyledHeader = styled.header`
   backdrop-filter: blur(4px);
   border-bottom: 1px solid rgb(238, 238, 238);
   box-shadow: rgba(0, 0, 0, 0.08) 0px -2px 16px;
+`;
+
+const UserButton = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+`;
+
+const UserImage = styled.img`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
 `;
 
 export default Header;

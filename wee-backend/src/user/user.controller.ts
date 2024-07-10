@@ -7,8 +7,8 @@ import { UserEntity } from 'src/entities/user.entity';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('register')
-  async register(@Body() userDTO: UserDTO): Promise<UserEntity>{
+  @Post('/register')
+  async register(@Body() userDTO: UserDTO): Promise<UserEntity> {
     const createdUser = await this.userService.createUser(userDTO);
 
     return createdUser;
