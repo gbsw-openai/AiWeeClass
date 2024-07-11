@@ -35,6 +35,9 @@ const Header = ({ onLoginClick, isLoggedIn }) => {
 };
 
 const HeaderContainer = styled.div`
+  * {
+    white-space: nowrap;
+  }
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -41,6 +41,10 @@ const FooterContainer = styled.div`
     color: #999;
   }
   .footer-title {
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    align-items: center;
     h3,
     p {
       font-size: 20px;
@@ -54,9 +58,10 @@ const FooterContainer = styled.div`
       background-color: #d4cbed;
       border-radius: 2px;
     }
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    background-color: #fff;
   }
 `;
 
@@ -67,6 +72,9 @@ const StyledFooter = styled.footer`
   width: 100%;
   height: 160px;
   background-color: #f6f4fc;
+  @media only screen and (max-width: 1000px) {
+    background-color: #fff;
+  }
 `;
 
 export default Footer;

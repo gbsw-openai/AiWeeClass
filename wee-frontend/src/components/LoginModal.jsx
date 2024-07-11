@@ -159,12 +159,35 @@ const ModalContainer = styled.div`
       }
     }
   }
+  @media only screen and (max-width: 1000px) {
+    width: 90%;
+    height: 400px;
+    form {
+      width: 90%;
+      .label {
+        margin-top: 10px;
+      }
+      input {
+        border: 1px solid #e9e9e9;
+        background-color: #eee;
+        width: 100%;
+        height: 50px;
+        margin-top: 10px;
+        border-radius: 10px;
+        &:focus {
+          outline: 1.5px solid #8161df;
+          background-color: #f1edff;
+        }
+      }
+    }
+  }
 `;
 
 const ButtonBox = styled.div`
   margin-top: 40px;
   display: flex;
   justify-content: space-between;
+  flex-direction: row;
   align-items: center;
   gap: 20px;
   span {
@@ -194,6 +217,9 @@ const ButtonBox = styled.div`
   .modal-login {
     font-weight: 600;
     background-color: #8161df;
+  }
+  @media only screen and (max-width: 1000px) {
+    flex-direction: column;
   }
 `;
 

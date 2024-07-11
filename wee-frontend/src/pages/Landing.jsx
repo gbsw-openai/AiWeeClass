@@ -58,6 +58,9 @@ const Landing = () => {
 };
 // 스타일링 코드는 이전과 동일하게 유지
 const FirstSection = styled.section`
+  * {
+    white-space: nowrap;
+  }
   width: 100%;
   margin-top: 60px;
   height: 400px;
@@ -88,6 +91,22 @@ const FirstSection = styled.section`
       margin-top: 40px;
     }
   }
+  @media only screen and (max-width: 1000px) {
+    height: 350px;
+    .inner {
+      img {
+        height: 350px;
+      }
+    }
+  }
+  @media only screen and (max-width: 820px) {
+    .inner {
+      padding-top: 100px;
+      img {
+        display: none;
+      }
+    }
+  }
 `;
 
 const SecondSection = styled.section`
@@ -108,11 +127,29 @@ const SecondSection = styled.section`
         line-height: 45px;
         margin-bottom: 40px;
         font-weight: 600;
+        white-space: nowrap;
       }
       p {
         line-height: 30px;
         color: #676767;
         font-size: 20px;
+        white-space: nowrap;
+      }
+    }
+  }
+  @media only screen and (max-width: 1000px) {
+    background-color: #f6f4fc;
+    .inner {
+      img {
+        display: none;
+      }
+      .second-right {
+        margin: 0;
+        h3 {
+          font-size: 1.8rem;
+          white-space: wrap;
+          line-height: 40px;
+        }
       }
     }
   }
