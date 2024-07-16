@@ -1,12 +1,12 @@
 import styled, { keyframes } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
-
-// import { login, register } from '../services/authService';
+import { setCookie } from '../services/cookieUtils';
 import axios from 'axios';
 
 // eslint-disable-next-line react/prop-types
-const LoginModal = ({ onClose }) => {
+const LoginModal = ({ onClose, onLoginSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [loginError, setLoginError] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -20,6 +20,7 @@ const LoginModal = ({ onClose }) => {
 
   const toggleModal = () => {
     setIsLogin(!isLogin);
+    setLoginError(null);
   };
 
   const handleSubmit = async e => {
@@ -27,11 +28,14 @@ const LoginModal = ({ onClose }) => {
     try {
       if (isLogin) {
         const response = await axios.post('http://localhost:3000/auth/login', { email, password });
-        console.log(response);
+        const { accessToken } = response.data;
+        setCookie('accessToken', accessToken, 7);
+        console.log('로그인 성공!');
+        onLoginSuccess();
         onClose();
       } else {
         if (password !== passwordConfirm) {
-          alert('비밀번호가 일치하지 않습니다.');
+          setLoginError('비밀번호가 일치하지 않습니다.');
           return;
         }
         await axios.post('http://localhost:3000/user/register', { email, password });
@@ -40,7 +44,7 @@ const LoginModal = ({ onClose }) => {
       }
     } catch (error) {
       if (error.response.status === 400) {
-        alert('잘못된 요청입니다.');
+        setLoginError('로그인 실패. 이메일 또는 비밀번호를 확인해주세요.');
         setPassword('');
         if (!isLogin) {
           setPasswordConfirm('');
@@ -78,6 +82,7 @@ const LoginModal = ({ onClose }) => {
               />
             </>
           )}
+          {loginError && <ErrorMessage>{loginError}</ErrorMessage>}
           <ButtonBox>
             <span onClick={toggleModal}>{isLogin ? '회원가입하기' : '로그인하기'}</span>
             <div className='btn-right'>
@@ -94,6 +99,12 @@ const LoginModal = ({ onClose }) => {
     </Overlay>
   );
 };
+
+const ErrorMessage = styled.p`
+  position: absolute;
+  color: red;
+  margin-top: 10px;
+`;
 
 const fadeIn = keyframes`
   from {

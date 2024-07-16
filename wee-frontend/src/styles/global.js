@@ -11,6 +11,10 @@ const GlobalStyles = createGlobalStyle`
     body, html {
         margin: 0;
         padding: 0;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
     .inner {
         margin: 0 auto;
@@ -28,6 +32,14 @@ const GlobalStyles = createGlobalStyle`
             filter: brightness(0.9);
             // transform: scale(1.01);
         }
+    }
+
+    img {
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+        user-drag: none;
     }
 
     input {

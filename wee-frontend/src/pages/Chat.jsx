@@ -2,16 +2,19 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import chatInputBtn from '../assets/chat-inputbtn.png';
 import smile from '../assets/smileface.png';
-import headerLogo from '/header-logo.png';
-import userImg from '/user-img.png';
 import OpenAI from 'openai';
-
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
+import { deleteCookie, getCookie } from '../services/cookieUtils';
+import LoginModal from '../components/LoginModal';
 
 const Chat = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [question, setQuestion] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('accessToken'));
+  const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+  const [isAnimating, setAnimating] = useState(false);
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
   const openai = new OpenAI({
     apiKey: apiKey,
@@ -19,92 +22,122 @@ const Chat = () => {
   });
 
   const sendMessage = async () => {
+    const newUserMessage = {
+      sender: 'user',
+      text: question,
+    };
+    setMessages(prevMessages => [...prevMessages, newUserMessage]);
     try {
+      setQuestion('');
       const response = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [
-          { role: 'system', content: 'You must answer in Korean. You are a communication.' },
+          {
+            role: 'system',
+            content:
+              '당신은 한국어만 사용할 수 있습니다. 당신은 학생들을 위한 심리 안정 상담원입니다. 학생들이 자신의 친구관계나 진로, 학교 적응 및 심리·정서적 안정을 위한 개인상담, 자존감 향상 등 고민을 털어놓을때 당신은 그들을 누구보다 아끼고 존중하며 달래주어야합니다. 만약 사용자가 이와 관계없는 가식적인 이야기를 할 경우 그 이야기를 이어나가지 않고 거부의사를 표현하며 심리상담 얘기를 이어가주세요.',
+          },
           { role: 'user', content: question },
         ],
       });
 
-      setMessages(response.choices[0].message.content);
+      const aiMessage = {
+        sender: 'ai',
+        text: response.choices[0].message.content,
+      };
+      setMessages(prevMessages => [...prevMessages, aiMessage]);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
+  const openLoginModal = () => {
+    setAnimating(false);
+    setLoginModalOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setAnimating(true);
+    setLoginModalOpen(false);
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    console.log('로그아웃 완료');
+    deleteCookie('accessToken');
+    setIsLoggedIn(false);
+    navigate('/');
+  };
+
+  const handleLoginButtonClick = () => {
+    openLoginModal();
+  };
+
   return (
     <Container>
-      <ChatHeader>
-        <div className='inner'>
-          <img
-            src={headerLogo}
-            alt=''
-            className='header-logo'
-            onClick={() => {
-              navigate('/');
-            }}
-          />
-          <img src={userImg} alt='' className='user-img' />
-        </div>
-      </ChatHeader>
+      <Header onLoginClick={openLoginModal} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       <ChatLog>
         {messages.map((msg, index) => (
-          // eslint-disable-next-line react/jsx-key
-          <UserMessage sender={msg.sender}>
+          <UserMessage sender={msg.sender} key={index}>
             <img src={smile} alt='' />
-            <Message key={index} sender={msg.sender}>
-              {msg.text}
-            </Message>
+            {msg.sender === 'user'}
+            <Message sender={msg.sender}>{msg.text}</Message>
           </UserMessage>
         ))}
       </ChatLog>
-      <StyledInput>
-        <input
-          type='text'
-          placeholder='고민을 자유롭게 얘기해주세요.'
-          value={question}
-          onChange={e => setQuestion(e.target.value)}
-          onKeyPress={e => e.key === 'Enter' && sendMessage()}
+      {!isLoggedIn && (
+        <DisabledMessage>
+          로그인 후 이용하실 수 있습니다.
+          <DisabledButton onClick={handleLoginButtonClick}>로그인하기</DisabledButton>
+        </DisabledMessage>
+      )}
+      {isLoggedIn && (
+        <StyledInput>
+          <input
+            type='text'
+            placeholder='고민을 자유롭게 얘기해주세요.'
+            value={question}
+            onChange={e => setQuestion(e.target.value)}
+            onKeyPress={e => e.key === 'Enter' && sendMessage()}
+          />
+          <img src={chatInputBtn} alt='' className='chat-input-btn' onClick={sendMessage} />
+        </StyledInput>
+      )}
+      {isLoginModalOpen && (
+        <LoginModal
+          onClose={closeLoginModal}
+          onLoginSuccess={handleLoginSuccess}
+          className={isAnimating ? 'fade-out' : ''}
         />
-        <img src={chatInputBtn} alt='' className='chat-input-btn' onClick={sendMessage} />
-      </StyledInput>
+      )}
     </Container>
   );
 };
-
-const ChatHeader = styled.header`
+const DisabledMessage = styled.div`
   position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  font-weight: bold;
+  color: #000;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+`;
+
+const DisabledButton = styled.button`
+  border-radius: 10px;
+  width: 500px;
   height: 60px;
-  width: calc(100% - 40px);
-  z-index: 1;
-  top: 0;
-  * {
-    white-space: nowrap;
-  }
-  background-color: #f6f4fc;
-  .inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    img.header-logo {
-      height: 24px;
-      width: auto;
-    }
-    img.user-img {
-      width: 36px;
-      height: 36px;
-    }
-    img:hover {
-      cursor: pointer;
-    }
-  }
-  @media only screen and (max-width: 720px) {
-    width: 100%;
-  }
+  font-size: 1.5rem;
+  color: #fff;
+  font-weight: 500;
+  background-color: #8161df;
 `;
 
 const ChatLog = styled.div`
@@ -126,7 +159,7 @@ const UserMessage = styled.div`
   display: flex;
   justify-content: ${({ sender }) => (sender === 'user' ? 'flex-end' : 'flex-start')};
   img {
-    display: ${({ sender }) => (sender === 'user' ? 'none' : 'block')};
+    display: ${({ sender }) => (sender === 'ai' ? 'block' : 'none')};
     width: 40px;
     height: 40px;
     margin-right: 10px;
@@ -179,8 +212,8 @@ const StyledInput = styled.div`
     padding-left: 20px;
   }
   .chat-input-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     margin-right: 10px;
     transition: all 0.2s ease;
     &:hover {

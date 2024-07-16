@@ -1,33 +1,22 @@
+/* eslint-disable react/prop-types */
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import userImg from '/user-img.png';
+import headerLogo from '/header-logo.png';
+import ProfileButton from './ProfileButton'; // ProfileButton 컴포넌트 임포트
 
-// eslint-disable-next-line react/prop-types
-const Header = ({ onLoginClick, isLoggedIn }) => {
+const Header = ({ isLoggedIn, onLoginClick, onLogout }) => {
   const navigate = useNavigate();
 
   return (
     <StyledHeader>
       <div className='inner'>
         <HeaderContainer>
-          <span className='header-logo' onClick={() => navigate('/')}>
-            <img src='src\assets\header-logo.svg' alt='' />
-            <h3>AI 위클래스</h3>
-          </span>
+          <img src={headerLogo} alt='' onClick={() => navigate('/')} className='header-logo' />
           <span className='header-nav'>
             <span className='header-nav-introduce' onClick={() => navigate('/')}>
               서비스소개
             </span>
-            {isLoggedIn ? (
-              <UserButton onClick={() => navigate('/profile')}>
-                {/* 유저 이미지 및 이름 표시 */}
-                <UserImage src={userImg} />
-              </UserButton>
-            ) : (
-              <button className='header-login' onClick={onLoginClick}>
-                로그인
-              </button>
-            )}
+            <ProfileButton isLoggedIn={isLoggedIn} onLoginClick={onLoginClick} onLogout={onLogout} />
           </span>
         </HeaderContainer>
       </div>
@@ -43,6 +32,7 @@ const HeaderContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   .header-nav {
+    height: 100%;
     display: flex;
     align-items: center;
     gap: 30px;
@@ -64,6 +54,8 @@ const HeaderContainer = styled.div`
     }
   }
   .header-logo {
+    height: 24px;
+    width: auto;
     display: flex;
     gap: 10px;
     &:hover {
@@ -94,19 +86,6 @@ const StyledHeader = styled.header`
   backdrop-filter: blur(4px);
   border-bottom: 1px solid rgb(238, 238, 238);
   box-shadow: rgba(0, 0, 0, 0.08) 0px -2px 16px;
-`;
-
-const UserButton = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-`;
-
-const UserImage = styled.img`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
 `;
 
 export default Header;

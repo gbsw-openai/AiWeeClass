@@ -1,4 +1,3 @@
-// Landing.jsx
 import { useState } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header';
@@ -7,24 +6,38 @@ import LoginModal from '../components/LoginModal';
 import bookImage from '../assets/reading-book.png';
 import poem from '../assets/poem.png';
 import { useNavigate } from 'react-router-dom';
+import { getCookie, deleteCookie } from '../services/cookieUtils';
 
 const Landing = () => {
   const navigate = useNavigate();
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isAnimating, setAnimating] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('accessToken'));
 
   const openLoginModal = () => {
     setAnimating(false);
     setLoginModalOpen(true);
   };
+
   const closeLoginModal = () => {
     setAnimating(true);
     setLoginModalOpen(false);
   };
 
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    console.log('로그아웃 완료');
+    deleteCookie('accessToken');
+    setIsLoggedIn(false);
+    navigate('/');
+  };
+
   return (
-    <>
-      <Header onLoginClick={openLoginModal} />
+    <Container>
+      <Header onLoginClick={openLoginModal} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       <FirstSection>
         <div className='inner'>
           <div className='first-left'>
@@ -51,11 +64,18 @@ const Landing = () => {
           </div>
         </div>
       </SecondSection>
-      {isLoginModalOpen && <LoginModal onClose={closeLoginModal} className={isAnimating ? 'fade-out' : ''} />}
+      {isLoginModalOpen && (
+        <LoginModal
+          onClose={closeLoginModal}
+          onLoginSuccess={handleLoginSuccess}
+          className={isAnimating ? 'fade-out' : ''}
+        />
+      )}
       <Footer />
-    </>
+    </Container>
   );
 };
+const Container = styled.div``;
 
 const FirstSection = styled.section`
   * {

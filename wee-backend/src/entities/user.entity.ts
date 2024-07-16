@@ -1,11 +1,11 @@
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity,  OneToMany, OneToOne} from 'typeorm';
 import { CommonBigPKEntity } from './common.entity';
 import { MessageEntity } from './message.entity';
-import { RoomEntity } from './room.entity';
+import { RoomEntity} from './room.entity';
 
 @Entity('User')
 export class UserEntity extends CommonBigPKEntity {
-  @Column('varchar', { unique: false, nullable: false })
+  @Column('varchar', { unique: false, nullable: false})
   password: string;
 
   @Column('varchar', { unique: true, nullable: false, length: 50 })

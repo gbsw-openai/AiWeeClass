@@ -1,4 +1,4 @@
-// import * as path from 'path';
+import * as path from 'path';
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { UserEntity } from './entities/user.entity';
@@ -16,6 +16,6 @@ export const dataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   entities: [UserEntity, RoomEntity, CommonBigPKEntity, MessageEntity],
-  synchronize: true,
+  synchronize: false,
   logging: true,
 });

@@ -35,7 +35,7 @@ import { OpenaiModule } from './openai/openai.module';
     }),
     UserModule,
     AuthModule,
-    OpenaiModule
+    OpenaiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
