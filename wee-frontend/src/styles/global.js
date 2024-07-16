@@ -6,7 +6,7 @@ const GlobalStyles = createGlobalStyle`
         margin: 0;
         box-sizing: border-box;
         font-family: 'Pretendard';
-        letter-spacing : -0.05em;
+        letter-spacing : -0.02em;
     }
     body, html {
         margin: 0;
@@ -26,7 +26,7 @@ const GlobalStyles = createGlobalStyle`
         transition: all 0.2s ease;
         &:hover, &:focus {
             filter: brightness(0.9);
-            transform: scale(1.01);
+            // transform: scale(1.01);
         }
     }
 

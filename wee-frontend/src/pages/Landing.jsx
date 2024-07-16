@@ -56,7 +56,7 @@ const Landing = () => {
     </>
   );
 };
-// 스타일링 코드는 이전과 동일하게 유지
+
 const FirstSection = styled.section`
   * {
     white-space: nowrap;

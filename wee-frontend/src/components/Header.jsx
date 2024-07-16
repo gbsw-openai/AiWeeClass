@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import userImg from '../assets/UserImg.png';
+import userImg from '/user-img.png';
 
+// eslint-disable-next-line react/prop-types
 const Header = ({ onLoginClick, isLoggedIn }) => {
   const navigate = useNavigate();
 
