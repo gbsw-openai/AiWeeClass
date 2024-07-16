@@ -1,5 +1,5 @@
 
-# AI 위클래스 - 심리·정서적 안정을 위한 AI 개인 상담 서비스
+## AI 위클래스 - 심리·정서적 안정을 위한 AI 개인 상담 서비스
 
 <br>
 
@@ -16,7 +16,7 @@
 
 ![언어 예외처리.png](https://github.com/user-attachments/assets/e1443cb0-80e9-4fcd-890a-29bf6d9dd61c)
 
-## 사용 기술
+### 사용 기술
 <a href="https://nestjs.com/"><img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=OpenAI&logoColor=white"/></a>
 <a href=""><img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=white"/></a>
 <a href="https://nestjs.com/"><img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=NestJS&logoColor=white"/></a>
