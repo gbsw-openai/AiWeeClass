@@ -1,30 +1,41 @@
 /* eslint-disable react/prop-types */
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 
 const ProfileButton = ({ isLoggedIn, onLoginClick, onLogout }) => {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = event => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('click', handleOutsideClick);
+    } else {
+      document.removeEventListener('click', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [isMenuOpen]);
 
   const handleProfileClick = () => {
-    const menu = document.getElementById('profile-menu');
-    if (menu) {
-      menu.classList.toggle('show');
-    }
+    setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <StyledProfileButton>
+    <StyledProfileButton ref={menuRef}>
       {isLoggedIn ? (
         <>
           <img src='/user-icon.png' alt='User Profile' onClick={handleProfileClick} />
-          <ProfileMenu id='profile-menu'>
-            <li
-              onClick={() => {
-                navigate('/');
-              }}
-            >
-              홈으로
-            </li>
+          <ProfileMenu id='profile-menu' className={isMenuOpen ? 'show' : 'hide'}>
             <li
               onClick={() => {
                 navigate('/chat');
@@ -55,17 +66,6 @@ const showMenuAnimation = keyframes`
   }
 `;
 
-const hideMenuAnimation = keyframes`
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-`;
-
 const ProfileMenu = styled.ul`
   position: absolute;
   top: 60px;
@@ -83,11 +83,6 @@ const ProfileMenu = styled.ul`
     animation-name: ${showMenuAnimation};
     opacity: 1;
     transform: translateY(0);
-  }
-  &.hide {
-    animation-name: ${hideMenuAnimation};
-    opacity: 0;
-    transform: translateY(-10px);
   }
   li {
     padding: 10px 20px;

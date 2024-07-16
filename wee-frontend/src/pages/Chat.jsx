@@ -121,7 +121,7 @@ const DisabledMessage = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: bold;
   color: #000;
   display: flex;
@@ -132,9 +132,9 @@ const DisabledMessage = styled.div`
 
 const DisabledButton = styled.button`
   border-radius: 10px;
-  width: 500px;
-  height: 60px;
-  font-size: 1.5rem;
+  width: 400px;
+  height: 50px;
+  font-size: 1.2rem;
   color: #fff;
   font-weight: 500;
   background-color: #8161df;
