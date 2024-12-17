@@ -4,13 +4,10 @@ import * as path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserEntity } from './entities/user.entity';
-import { MessageEntity } from './entities/message.entity';
-import { RoomEntity } from './entities/room.entity';
-import { CommonBigPKEntity } from './entities/common.entity';
 import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
 import { OpenaiModule } from './openai/openai.module';
+import { AuthModule } from './auth/auth.module';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -27,15 +24,17 @@ import { OpenaiModule } from './openai/openai.module';
         database: configService.get('DB_NAME'),
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
-        entities: [UserEntity, MessageEntity, RoomEntity, CommonBigPKEntity],
+        entities: [path.join(__dirname, '../**/*.entity.{js, ts}')],
         synchronize: false,
         logging: true,
         timezone: 'local',
       }),
     }),
     UserModule,
-    AuthModule,
     OpenaiModule,
+    AuthModule,
+    RoomModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],

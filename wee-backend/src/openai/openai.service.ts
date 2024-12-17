@@ -1,43 +1,46 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MessageEntity } from 'src/entities/message.entity';
-import { UserEntity } from 'src/entities/user.entity';
 
 @Injectable()
-export class OpenaiService {
+export class OpenAiService {
   private readonly openai: OpenAI;
+  private readonly prompt: string;
 
   constructor(
     private readonly configService: ConfigService,
     @InjectRepository(MessageEntity)
     private readonly messageRepository: Repository<MessageEntity>,
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
     });
+    this.prompt = this.configService.get('OPENAI_PROMPT');
   }
 
-  async chat(message: any, userId: string, aiResponse: string) {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
+  async chat(createmessagedto): Promise<MessageEntity> {
+    const {userMessage, userId} = createmessagedto;
+    const chatCompletion = await this.openai.chat.completions.create({
+      model: this.configService.get('OPENAI_API_MODEL'),
+      messages: [
+        { role: 'system', content: this.prompt },
+        { role: 'user', content: userMessage},
+      ],
+      max_tokens: 500,
+      temperature: 0.4,
     });
 
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
-    }
+    const aiResponse = chatCompletion.choices[0].message.content;
 
-    const savedMessage = this.messageRepository.create({
-      message,
-      aiResponse,
+    const counsel = this.messageRepository.create({
+      aiResponse: aiResponse,
+      userId: userId,
+      userMessage: userMessage,
     });
 
-    await this.messageRepository.save(savedMessage);
-
-    return { savedMessage };
+    return await this.messageRepository.save(counsel);
   }
 }

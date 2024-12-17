@@ -1,8 +1,9 @@
-/*import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateRoomDto } from 'src/dtos/create-room.dto';
 import { MessageEntity } from 'src/entities/message.entity';
 import { RoomEntity } from 'src/entities/room.entity';
-import { OpenaiService } from 'src/openai/openai.service'; 
+import { OpenAiService } from 'src/openai/openai.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -11,37 +12,52 @@ export class RoomService {
         @InjectRepository(RoomEntity)
         private readonly roomRepository: Repository<RoomEntity>,
         @InjectRepository(MessageEntity)
-        private readonly messageRepository: Repository<MessageEntity>,
-        private readonly openAiService: OpenaiService
+        private readonly openAiService: OpenAiService,
     ) {}
-    async createRoom(userId: string, name: string): Promise<RoomEntity> {
-        const user = await this.messageRepository.findOne({ where: { id: userId } });
-        if (!user) {
-          throw new NotFoundException('User not found');
-        }
-    
-        const room = this.roomRepository.create({
-          name,
-          user,
+
+    async createRoom(createRoomDto: CreateRoomDto): Promise<RoomEntity> {
+        const {name, userId} = createRoomDto;
+
+        const user = await this.roomRepository.findOne({
+            where: { userId },
         });
-        return this.roomRepository.save(room);
-      }
-    
-      async sendMessage(userId: string, roomId: string, message: string, aiResponse: string): Promise<RoomEntity> {
-        const user = await this.roomRepository.findOne({ where: { id: userId } });
+
         if (!user) {
-          throw new NotFoundException('User not found');
+            throw new NotFoundException('User not found');
         }
-    
-        const findroom = await this.roomRepository.findOne({
-          where: { id: roomId },
+
+        const newRoom = this.roomRepository.create({
+            name,
+            userId,
         });
-        if (!findroom) {
-          throw new NotFoundException('Room not found');
+
+        return await this.roomRepository.save(newRoom);
+    }
+
+    async getOneRoom(roomId: number) {
+
+      const getRoom = await this.roomRepository.findOne({ where: { roomId } });
+
+        if (!getRoom) {
+            throw new NotFoundException('Room not found');
         }
-    
-        await this.openAiService.chat(userId, message);
-    
-        return findroom;
+
+        return getRoom;
+    }
+
+    async getAllRooms(): Promise<RoomEntity[]> {
+        return await this.roomRepository.find();
+    }
+
+    async deleteRoom(userId: number, roomId: number){
+      const room = await this.roomRepository.findOne({ where: { userId } });
+
+      if(!room) {
+        throw new NotFoundException('Room not found');
+      } else {
+        console.log(room);
       }
-    }*/
+
+      return await this.roomRepository.delete({ roomId });
+    }
+}

@@ -16,4 +16,5 @@ export class UserEntity extends CommonBigPKEntity {
 
   @OneToOne(() => RoomEntity, (room) => room.user)
   rooms: RoomEntity[];
+  
 }

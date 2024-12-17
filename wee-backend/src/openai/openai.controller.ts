@@ -1,25 +1,18 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
-import { OpenaiService } from './openai.service';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { User } from 'src/decorators/user.decorators';
-import { CreateChatDto } from 'src/dtos/create-chat-dto';
+import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { OpenAiService } from "./openai.service";
+import { MessageEntity } from "src/entities/message.entity";
+import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
+import { CreateMessageDto } from "src/dtos/create-messge.dto";
 
-@Controller('openai')
-export class OpenaiController {
-  constructor(private readonly openaiService: OpenaiService) {}
-
+@Controller('chat')
+export class OpenAiController {
+  constructor(private readonly openAiService: OpenAiService) {}
   @UseGuards(JwtAuthGuard)
-  @Post('/chat')
-  async chat(@Body() body: CreateChatDto, @User() user) {
-    const message = body.message;
-    const aiResponse = body.aiResponse;
+  @Post()
+  async createChat(
+    @Body() createmessagedto: CreateMessageDto): Promise<MessageEntity> {
+    const chat = await this.openAiService.chat(createmessagedto);
 
-    const userId = user.id;
-
-    // OpenaiService의 chat 메서드 호출
-    const result = await this.openaiService.chat(message, aiResponse, userId);
-
-    // AI 응답과 함께 메시지의 id와 createdAt을 클라이언트에게 반환
-    return result;
+    return chat;
   }
 }
