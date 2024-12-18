@@ -4,9 +4,8 @@ import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { UserDTO } from 'src/dtos/user.dto';
-import { Response } from 'express'; // Response 임포트 추가
-import { InternalServerError } from 'openai';
+import { CreateUserDto } from 'src/dtos/user.dto';
+import { Response } from 'express'; 
 
 @Injectable()
 export class AuthService {
@@ -17,8 +16,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(userDTO: UserDTO) {
-    const { password, email } = userDTO;
+  async validateUser(createUserDto: CreateUserDto) {
+    const { email, password } = createUserDto;
     const user = await this.userRepository.findOne({
       where: { email: email },
     });
@@ -36,7 +35,6 @@ export class AuthService {
     return {
       id: user.id,
       email: user.email,
-      createdAt: user.createdAt,
     };
   }
 

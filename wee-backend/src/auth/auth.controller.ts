@@ -1,8 +1,8 @@
 import { Body, Controller, Post, Req, UseGuards, Res, Get, BadRequestException, HttpException } from '@nestjs/common';  // Res 추가
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from 'src/guards/local-auth.guard';
-import { UserDTO } from 'src/dtos/user.dto';
 import { Request, Response } from 'express';
+import { CreateUserDto } from 'src/dtos/user.dto';
 
 
 @Controller('/auth')
@@ -11,8 +11,8 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async logIn(@Body() userDTO: UserDTO, @Res() res: Response) {
-    const user = await this.authService.validateUser(userDTO);
+  async logIn(@Body() createUserDTO: CreateUserDto, @Res() res: Response) {
+    const user = await this.authService.validateUser(createUserDTO);
     await this.authService.logIn(user, res);
     return res.send({
       message: 'success'

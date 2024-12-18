@@ -1,63 +1,38 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateRoomDto } from 'src/dtos/create-room.dto';
-import { MessageEntity } from 'src/entities/message.entity';
 import { RoomEntity } from 'src/entities/room.entity';
-import { OpenAiService } from 'src/openai/openai.service';
+import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class RoomService {
     constructor(
         @InjectRepository(RoomEntity)
         private readonly roomRepository: Repository<RoomEntity>,
-        @InjectRepository(MessageEntity)
-        private readonly openAiService: OpenAiService,
+        private readonly userService: UserService,
     ) {}
 
-    async createRoom(createRoomDto: CreateRoomDto): Promise<RoomEntity> {
-        const {name, userId} = createRoomDto;
+    async createRoom(createRoomDto: CreateRoomDto, token: string): Promise<RoomEntity> {
 
-        const user = await this.roomRepository.findOne({
-            where: { userId },
-        });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET) as {
+            id: number;
+        };
 
-        if (!user) {
+        const userId = await this.userService.getOneUser(decoded.id);
+    
+        // 유저가 없다면 예외 처리
+        if (!userId) {
             throw new NotFoundException('User not found');
         }
+    
+        const room = await this.roomRepository.save({
+            name: createRoomDto.name,
+            userId: decoded.id,
+          });
 
-        const newRoom = this.roomRepository.create({
-            name,
-            userId,
-        });
-
-        return await this.roomRepository.save(newRoom);
+          return room;
     }
 
-    async getOneRoom(roomId: number) {
-
-      const getRoom = await this.roomRepository.findOne({ where: { roomId } });
-
-        if (!getRoom) {
-            throw new NotFoundException('Room not found');
-        }
-
-        return getRoom;
-    }
-
-    async getAllRooms(): Promise<RoomEntity[]> {
-        return await this.roomRepository.find();
-    }
-
-    async deleteRoom(userId: number, roomId: number){
-      const room = await this.roomRepository.findOne({ where: { userId } });
-
-      if(!room) {
-        throw new NotFoundException('Room not found');
-      } else {
-        console.log(room);
-      }
-
-      return await this.roomRepository.delete({ roomId });
-    }
 }

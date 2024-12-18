@@ -1,21 +1,25 @@
-import { Column, Entity, JoinColumn, OneToMany } from "typeorm";
-import { CommonBigPKEntity } from "./common.entity";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 import { MessageEntity } from "./message.entity";
 
 @Entity('Room')
-export class RoomEntity extends CommonBigPKEntity {
-  @Column('varchar', { unique: false, nullable: false})
+export class RoomEntity extends BaseEntity{
+
+  @PrimaryGeneratedColumn({ type: 'int' })
+  id: number;
+
+  @Column('varchar', { unique: false, nullable: false })
   name: string;
 
-  @Column('int', { unique: false, nullable: false })
+  @Column({
+    name: 'user_id',
+    type: 'integer',
+    nullable: false
+  })
   userId: number;
 
-  @Column('int', { unique: false, nullable: false})
-  roomId: number;
-
-  @OneToMany(() => UserEntity, (user) => user.rooms)
-  @JoinColumn({ name: 'roomId', referencedColumnName: 'id' })
+  @ManyToOne(() => UserEntity, (user) => user.rooms, { onDelete: 'CASCADE', eager: false })
+  @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
   @OneToMany(() => MessageEntity, (message) => message.room, { onDelete: 'CASCADE' })  // onDelete: 'CASCADE' 추가

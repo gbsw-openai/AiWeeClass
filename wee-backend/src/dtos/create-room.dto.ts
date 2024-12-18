@@ -1,7 +1,6 @@
-import { PickType } from "@nestjs/swagger";
-import { RoomEntity } from "src/entities/room.entity";
+import { IsString } from 'class-validator';
 
-export class CreateRoomDto extends PickType(RoomEntity, [
-    'name',
-    'userId',
-]) {}
+export class CreateRoomDto {
+  @IsString()
+  name: string
+}

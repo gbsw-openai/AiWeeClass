@@ -1,7 +1,9 @@
-import { PickType } from "@nestjs/swagger";
-import { MessageEntity } from "src/entities/message.entity";
+import { IsString } from "class-validator";
 
-export class CreateMessageDto extends PickType(MessageEntity, [
-    'userId',
-    'userMessage',
-]) {}
+export class CreateMessageDto {
+  @IsString()
+  userMessage: string;
+
+  @IsString()
+  user_id: string;
+}

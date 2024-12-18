@@ -1,10 +1,12 @@
-import { Column, Entity,  OneToMany, OneToOne} from 'typeorm';
-import { CommonBigPKEntity } from './common.entity';
+import { BaseEntity, Column, Entity,  OneToMany, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
 import { MessageEntity } from './message.entity';
 import { RoomEntity} from './room.entity';
 
 @Entity('User')
-export class UserEntity extends CommonBigPKEntity {
+export class UserEntity extends BaseEntity{
+  @PrimaryGeneratedColumn({ type: 'int' })
+  id: number;
+
   @Column('varchar', { unique: false, nullable: false})
   password: string;
 
@@ -14,7 +16,7 @@ export class UserEntity extends CommonBigPKEntity {
   @OneToMany(() => MessageEntity, (message) => message.user)
   messages: MessageEntity[];
 
-  @OneToOne(() => RoomEntity, (room) => room.user)
+  @OneToMany(() => RoomEntity, (room) => room.user)
   rooms: RoomEntity[];
   
 }
