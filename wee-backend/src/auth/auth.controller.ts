@@ -32,6 +32,7 @@ export class AuthController {
     }
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('/logout')
   logout(@Req() req: Request, @Res() res: Response): any {
     res.cookie('jwt', '', {
